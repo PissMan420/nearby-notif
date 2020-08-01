@@ -10,12 +10,12 @@ using Newtonsoft.Json;
 
 namespace nearby_notif
 {
-    class RobloxLib
+    class RobloxStat
     {
         // currency values
         public int Rap { get; }
-        public int Value { get; } 
-        
+        public int Value { get; }
+
         
         private string HttpGet(string uri) {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
