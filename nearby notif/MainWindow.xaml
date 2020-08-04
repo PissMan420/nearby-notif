@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:nearby_notif"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="MainWin" x:Class="nearby_notif.MainWindow"
         mc:Ignorable="d"
-        Title="nearby notification" Height="471" Width="293" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" Icon="domino crown.png" Topmost="True">
+        Title="nearby notification" Height="471" Width="513" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" Icon="domino crown.png" Topmost="True">
     <Grid Margin="0,0,-6,0" HorizontalAlignment="Right" Width="293" Height="441" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="440*"/>
