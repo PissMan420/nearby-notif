@@ -19,7 +19,6 @@ function get_user_value( user_id )
     return Remotes.UserLimiteds.GetUserRAP:InvokeServer(user_id).value
 end
 --// websocket connection
-local onMessageSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=ChatSocket")
 local saveSettingSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=settingSaveRequest")
 local PlayerDataSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=PlayerDataSocket")
 

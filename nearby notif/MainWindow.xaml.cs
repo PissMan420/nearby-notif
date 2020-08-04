@@ -3,7 +3,6 @@ using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WebSocketSharp;
-
 namespace nearby_notif
 {
     /// <summary>C:\Users\ASD\Project\csharp\nearby notif\nearby notif\neaby notif script.lua
@@ -13,9 +12,9 @@ namespace nearby_notif
     {
         // websocket server
         WebSocket saveSettingRequest = new WebSocket("ws://localhost:24892/custom?channel=settingSaveRequest");
-        WebSocket playerChatSocket = new WebSocket("ws://localhost:24892/custom?channel=ChatSocket");
         // websocket serrver that is for the connection between the get_user_Value functions it is also used for receiveing message 
         WebSocket PlayerDataSocket = new WebSocket("ws://localhost:24892/custom?channel=PlayerDataSocket");
+        WebSocket ExecuteSocket = new WebSocket("ws://localhost:24892/execute");
         public Uri AvatarThumbnail { get; set; }
 
         public MainWindow() {
@@ -25,46 +24,41 @@ namespace nearby_notif
             saveSettingRequest.OnError += SaveSettingRequest_OnError;
             saveSettingRequest.OnMessage += SaveSettingRequest_OnMessage;
 
-            playerChatSocket.ConnectAsync();
-            playerChatSocket.OnMessage += PlayerChatSocket_OnMessage;
-
             PlayerDataSocket.ConnectAsync();
             PlayerDataSocket.OnMessage += PlayerDataSocket_OnMessage;
 
+            ExecuteSocket.ConnectAsync();
         }
 
         private void SaveSettingRequest_OnError(object sender, ErrorEventArgs e) => MessageBox.Show($"Error with conneting to the websocket server :\n{e.Message}\nMaybe synapse isn't  opened loaded or you have't  turned on the websocket in the theme.json of synapse?", "Error with connecting to the websocket server.");
 
         string rolimon_url;
+        string PlayerToRender;
         private void PlayerDataSocket_OnMessage(object sender, MessageEventArgs e) {
             SpeakerData currentSpeakerData = JsonConvert.DeserializeObject<SpeakerData>(e.Data);
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
             bitmap.UriSource = currentSpeakerData.AvatarThumb;
             bitmap.EndInit();
-
             void Action() {
-                /*PlayerImage.Dispatcher.Invoke(callback: () => */
                 //PlayerImage.Source = bitmap;
-                /*PlayerName.Dispatcher.Invoke(() => */
                 PlayerName.Content = currentSpeakerData.Username;
-                /*rap.Dispatcher.Invoke(() => */
-                rap.Content = currentSpeakerData.RecentAveragePrice.ToString();
-                /*value.Dispatcher.Invoke(() => */
-                value.Content = currentSpeakerData.Value.ToString();
-                /*PlayerMessage.Dispatcher.Invoke(() =>.*/
+                if (currentSpeakerData.RecentAveragePrice == -1  && currentSpeakerData.Value == -1) {
+                    rap.Content = $"The RAP isn't availaible due to {currentSpeakerData.Username} inventory being private";
+                    value.Content = $"The value isn't availaible due to {currentSpeakerData.Username} inventory being private";
+                } else {
+                    rap.Content = currentSpeakerData.RecentAveragePrice.ToString();
+                    value.Content = currentSpeakerData.Value.ToString();
+                }
                 PlayerMessage.Text = currentSpeakerData.Message;
 
             }
             Application.Current.Dispatcher.Invoke(Action);
+            PlayerToRender = currentSpeakerData.Username;
             rolimon_url = "https://www.rolimons.com/player/" + currentSpeakerData.UserId;
         }
 
         private void SaveSettingRequest_OnOpen(object sender, EventArgs e) => saveSettingRequest.Send("Sucessfully connected to the setting ws server");
-
-        private void PlayerChatSocket_OnMessage(object sender, MessageEventArgs e) {
-            throw new NotImplementedException();
-        }
 
         private void SaveSettingRequest_OnMessage(object sender, MessageEventArgs e) {
             if (e.Data == "LETTER_ERROR")
@@ -76,7 +70,12 @@ namespace nearby_notif
             saveSettingRequest.Send(MaxDist.Text);
         }
 
-        private void HighlightPlayer_Click(object sender, RoutedEventArgs e) {
+        private void HighlightPlayer_Click_1(object sender, RoutedEventArgs e) {
+            if (PlayerToRender == "" || PlayerToRender == null) {
+                MessageBox.Show("There isn't any player to highlight.", "No player to highliht", MessageBoxButton.OK, MessageBoxImage.Warning);
+            } else {
+                ExecuteSocket.Send($"local EzESP = loadstring(game:HttpGetAsync('https://pastebin.com/raw/r5xK0qCP'))() local Tracer = EzESP.Tracer(game.Players[\"{PlayerToRender}\"].Character.PrimaryPart, Color3.fromRGB(255, 211, 36), 1) wait(15) Tracer()");
+            }
 
         }
     }
