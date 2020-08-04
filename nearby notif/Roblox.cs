@@ -1,14 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Media;
 
 namespace nearby_notif
 {
@@ -33,12 +23,13 @@ namespace nearby_notif
         }
     }
 
-    class SpeakerData {
+    class SpeakerData
+    {
         public string Username { get; set; }
         public int UserId { get; set; }
         public int RecentAveragePrice { get; set; }
         public int Value { get; set; }
         public string Message { get; set; }
-        public Uri AvatarThumb {get; set;}
+        public Uri AvatarThumb { get; set; }
     }
 }

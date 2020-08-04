@@ -11,19 +11,6 @@ local HttpService  = game:GetService("HttpService")
 
 
 -- functions
-function get_distance_within_localplayer( player )
-    return LocalPlayer.Character.HumanoidRootPart.Position.Magnitude - game.Players[player].Character.HumanoidRootPart.Position.Magnitude
-end
-
-function is_within_distance( player )
-    if NEAR_DISTANCE >= get_distance_within_localplayer(player) then
-        
-        return true
-    else 
-        return true;
-    end
-end
-
 function get_player_rap(user_id)
     return Remotes.UserLimiteds.GetUserRAP:InvokeServer(user_id).rap
 end
@@ -31,9 +18,7 @@ end
 function get_user_value( user_id )
     return Remotes.UserLimiteds.GetUserRAP:InvokeServer(user_id).value
 end
-
-
---// websocket connections
+--// websocket connection
 local onMessageSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=ChatSocket")
 local saveSettingSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=settingSaveRequest")
 local PlayerDataSocket = syn.websocket.connect("ws://localhost:24892/custom?channel=PlayerDataSocket")
@@ -54,13 +39,15 @@ OnNewMessage.OnClientEvent:connect(function(MessageTable,MessageChannel)
     local SpeakerName = MessageTable.FromSpeaker
     local SpeakerRAP = get_player_rap(SpeakerUserId)
     local SpeakerValue = get_user_value(SpeakerUserId)
-    if is_within_distance(SpeakerName) then
+    local SpeakerMessage = MessageTable.Message
+    if LocalPlayer:DistanceFromCharacter(SpeakerInstance.Character.PrimaryPart.Position) <= NEAR_DISTANCE then
         local SpeakerData = HttpService:JSONEncode{
             Username = SpeakerName,
             UserId = SpeakerUserId,
             RecentAveragePrice = SpeakerRAP,
             Value = SpeakerValue;
-            AvatarThumb = "https://www.roblox.com/Thumbs/Avatar.ashx?x=420&y=420&userid=" .. SpeakerUserId
+            Message = SpeakerMessage;
+            AvatarThumb = "https://www.roblox.com/Thumbs/Avatar.ashx?x=420&y=420&userid=" .. SpeakerUserId 
         } 
         PlayerDataSocket:Send(SpeakerData)
     end
