@@ -1,4 +1,10 @@
 ﻿-- constants / var that will change but it's mostly config stuff
+if nearby_notif_loaded then
+    messageboxasync("The nearby notification script is already loaded.","Already loaded",0)
+    return
+end
+
+getgenv().nearby_notif_loaded = true
 if not isfile("nearby_notif.cfg") then
     writefile("nearby_notif.cfg","3")
 end
